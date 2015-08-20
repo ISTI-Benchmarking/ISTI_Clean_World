@@ -39,6 +39,7 @@ from RandomsRanges import LetterRange
 from LinearTrends import MedianPairwise
 import re	# regular expression stuff for character replacement within strings
 from scipy.stats import itemfreq # a way of looking for unique values and their frequency of occurence
+import pdb	# for stopping and restarting with editability (stop is pdb.set_trace(),restart is c)
 
 # Input Files
 INFILEH='/data/local/hadkw/HADCRUH2/UPDATE2014/LISTS_DOCS/PosthomogIDPHAt_goodsHadISDH.2.0.1.2014p_JAN2015.txt'

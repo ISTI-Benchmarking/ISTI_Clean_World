@@ -31,6 +31,7 @@ from mpl_toolkits.basemap import Basemap
 import datetime as dt
 from matplotlib.dates import date2num,num2date
 from netCDF4 import Dataset
+import pdb	# for stopping and restarting with editability (stop is pdb.set_trace(),restart is c)
 
 
 # RESTART VALUE

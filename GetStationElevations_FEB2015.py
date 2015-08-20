@@ -45,6 +45,7 @@ import scipy.stats
 import struct
 #from netCDF4 import Dataset
 from scipy.io import netcdf
+import pdb	# for stopping and restarting with editability (stop is pdb.set_trace(),restart is c)
 
 # RESTART VALUE
 Restarter='------'	#'------'		#'    01010000' station ID

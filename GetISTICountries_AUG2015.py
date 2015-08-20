@@ -37,6 +37,7 @@ from scipy.special import erf
 import scipy.stats
 from math import sqrt,pi
 import struct
+import pdb	# for stopping and restarting with editability (stop is pdb.set_trace(),restart is c)
 
 from Geography import TwoPointDistanceKm
 
