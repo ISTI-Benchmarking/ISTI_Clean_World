@@ -1,0 +1,59 @@
+# PYTHON2.7
+# 
+# Author: Kate Willett
+# Created: 1 September 2015
+# Last update: 1 September 2015
+# Location: /home/h04/hadkw/Desktop/SurfaceTemperaturesWorkshop/BENCHMARKINGASSESS_GROUP/TEAM_CREATION/VARPROGS/	# this will probably change
+# GitHub: https://github.com/SurfaceTemp/ISTI_Clean_Worlds/
+# -----------------------
+# CODE PURPOSE AND OUTPUT
+# -----------------------
+# <brief summary of code purpose and main outputs>
+# 
+# <references to related published material, e.g. that describes data set>
+# 
+# -----------------------
+# LIST OF MODULES
+# -----------------------
+# <List of program modules required to run the code, or link to compiler/batch file>
+# 
+# -----------------------
+# DATA
+# -----------------------
+# <source data sets required for code; include data origin>
+# 
+# -----------------------
+# HOW TO RUN THE CODE
+# -----------------------
+# <step by step guide to running the code>
+# 
+# -----------------------
+# OUTPUT
+# -----------------------
+# <where this is written to and any other useful information about output>
+# 
+# -----------------------
+# VERSION/RELEASE NOTES
+# -----------------------
+# 
+# Version 1 (release date)
+# ---------
+#  
+# Enhancements
+#  
+# Changes
+#  
+# Bug fixes
+#  
+# Version 2 (release date)
+# ---------
+#  
+# Enhancements
+#  
+# Changes
+#  
+# Bug fixes
+#  
+# -----------------------
+# OTHER INFORMATION
+# -----------------------
