@@ -42,12 +42,12 @@ Restarter='------'	#'------'		#'    01010000' station ID
 
 # Set up file locations
 STATLIST='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/ISTILONGINVENTORY_stage3proxyelevs_JUL2015.dat'
-INFILEE='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/FIXCLEAN1_ISTI_stage3proxyelevs_loess03MDA60CLSfix_JUL2015.txt'	#_stage3
+INFILEE='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/FIXCLEAN1_ISTI_stage3proxyelevs_loess03MDA60CLSfix_AUG2015.txt'	#_stage3
 INREALS='/data/local/hadkw/ISTI/DATA/ISTIv101_JUL2015/results_merged/merge_'
-OUTSTATLIST='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/ISTILONGINVENTORYghcn_stage3proxyelevs_JUL2015.dat'
+OUTSTATLIST='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/ISTILONGINVENTORYghcn_stage3proxyelevs_AUG2015.dat'
 OUTFILEEGHCN='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/GHCN_TYPE/' # add ID number here
 OUTFILEEISTI='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/ISTI_TYPE/' # add ID number here
-OUTFILEEMASK='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/MASKEDFIXCLEAN1_ISTI_stage3proxyelevs_loess03MDA60CLSfix_JUL2015.txt'
+OUTFILEEMASK='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/MASKEDFIXCLEAN1_ISTI_stage3proxyelevs_loess03MDA60CLSfix_AUG2015.txt'
 
 # Set up variables and holders
 MDI=-9999
@@ -56,7 +56,7 @@ REdYr=2015
 RYrCount=(REdYr-RStYr)+1
 RMonCount=RYrCount*12
 RYrArr=np.array(range(RYrCount))+RStYr
-StYr=1860
+StYr=1800
 EdYr=2018
 YrCount=(EdYr-StYr)+1
 MonCount=YrCount*12
