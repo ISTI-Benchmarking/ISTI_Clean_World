@@ -94,7 +94,7 @@ def WriteGHCNList(TheIDs,TheLats,TheLons,TheElevs,TheCOs,TheNames,TheFilee,TheSC
 
     My_Fhandle=file(TheFilee,'a')
     for ss in range(TheSCount):
-        outlist=list(("{:11s}".format(TheIDs[ss]),
+        outlist=list(("{:11s}".format(TheIDs[ss].strip()),
 	             "{:7.2f}".format(TheLats[ss]),
 		     "{:10.2f}".format(TheLons[ss]),
 		     "{:13d}".format(int(round(TheElevs[ss]))),
