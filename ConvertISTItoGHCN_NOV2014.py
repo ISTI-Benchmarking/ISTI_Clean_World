@@ -51,13 +51,13 @@ OUTFILEEMASK='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/MASKEDFIXCLEA
 
 # Set up variables and holders
 MDI=-9999
-RStYr=1850
-REdYr=2015
-RYrCount=(REdYr-RStYr)+1
-RMonCount=RYrCount*12
-RYrArr=np.array(range(RYrCount))+RStYr
-StYr=1800
-EdYr=2018
+#RStYr=1800	# Actual start year
+#REdYr=2018	# Actual end year
+#RYrCount=(REdYr-RStYr)+1
+#RMonCount=RYrCount*12
+#RYrArr=np.array(range(RYrCount))+RStYr
+StYr=1800	# Simulated start year
+EdYr=2018	# Simulated end year
 YrCount=(EdYr-StYr)+1
 MonCount=YrCount*12
 YrArr=np.array(range(YrCount))+StYr
