@@ -99,9 +99,9 @@ def WriteGHCNList(TheIDs,TheLats,TheLons,TheElevs,TheCOs,TheNames,TheFilee,TheSC
 		     "{:10.2f}".format(TheLons[ss]),
 		     "{:13d}".format(int(round(TheElevs[ss]))),
 		     " ",
-		     "{:2s}".format(TheCOs[ss][0:2]),
+		     "{:2s}".format(TheCOs[ss][1:3]),
 		     " ",
-		     "{:30s}".format(TheNames[ss])))
+		     "{:30s}".format(TheNames[ss][1:31])))
  
         # Add this to the noelevs list
         outlist=np.reshape(outlist,(1,len(outlist)))     
