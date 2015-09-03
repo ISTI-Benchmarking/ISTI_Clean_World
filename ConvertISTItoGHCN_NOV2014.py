@@ -23,6 +23,10 @@
 # Added the missing data mask from the real data - so we now output only the missing data versions in ISTI and GHCN format
 # BUT also output a missing data version in my singla ASCII format
 #
+# SEP 2015
+# Now only prints data from the first year of data in that station to the last year of data in that station to save space, and PHA processing
+# Also updated so that the GHCN list is correct. Fudged country code by using first two letters of Station ID just to fill space.
+#
 # REQUIRES
 #************************************************************************
 # Set up python imports
@@ -57,7 +61,7 @@ MDI=-9999
 #RMonCount=RYrCount*12
 #RYrArr=np.array(range(RYrCount))+RStYr
 StYr=1800	# Simulated start year
-EdYr=2018	# Simulated end year
+EdYr=2015	# Simulated end year
 YrCount=(EdYr-StYr)+1
 MonCount=YrCount*12
 YrArr=np.array(range(YrCount))+StYr
@@ -99,7 +103,7 @@ def WriteGHCNList(TheIDs,TheLats,TheLons,TheElevs,TheCOs,TheNames,TheFilee,TheSC
 		     "{:10.2f}".format(TheLons[ss]),
 		     "{:13d}".format(int(round(TheElevs[ss]))),
 		     " ",
-		     "{:2s}".format(TheCOs[ss][1:3]),
+		     "{:2s}".format(TheIDs[ss][1:3]), #format(TheCOs[ss][1:3])
 		     " ",
 		     "{:30s}".format(TheNames[ss][1:31])))
  
@@ -113,12 +117,19 @@ def WriteGHCNList(TheIDs,TheLats,TheLons,TheElevs,TheCOs,TheNames,TheFilee,TheSC
     
 #***********************************************************************
 # WRITEGHCNSTATIONS
-def WriteGHCNStations(TheID,TheStation,TheYears,TheFilee):
+def WriteGHCNStations(TheID,TheStation,TheYears,TheFilee,TheMDI):
     ''' Output station data in GHCN format '''
-
-    My_Fhandle=file(TheFilee,'a')
-    for ss in range(len(TheYears)):
     
+    FindPresent=np.where(TheStation > TheMDI/100.) # a 2 array list of (years, months) for each location where there is data
+    
+    # Use the first location and last location
+    StartYear=FindPresent[0][0] 	# switch to start printing to file when data are present
+    EndYear=FindPresent[0][len(FindPresent[0])-1] # switch to stop printing to file when data are no longer present
+    #print(StartYear,EndYear)
+    #pdb.set_trace()
+    My_Fhandle=file(TheFilee,'a')
+    for ss in range(StartYear,EndYear+1):
+
         outlist=list(("{:11s}".format(TheID),
                    " ",
 		   "{:4d}".format(TheYears[ss]),
@@ -156,7 +167,7 @@ def WriteGHCNStations(TheID,TheStation,TheYears,TheFilee):
     
 #***********************************************************************
 # WRITEISTISTATIONS
-def WriteISTIStations(TheName,TheLat,TheLon,TheElev,TheStation,TheYears,TheBCHM,TheFilee):
+def WriteISTIStations(TheName,TheLat,TheLon,TheElev,TheStation,TheYears,TheBCHM,TheFilee,TheMDI):
     ''' Output station data in ISTI format '''
     ''' 30 Name, '''
     ''' 11.4 latitude, '''
@@ -171,10 +182,17 @@ def WriteISTIStations(TheName,TheLat,TheLon,TheElev,TheStation,TheYears,TheBCHM,
     ''' 6 tavg, ''' 
     ''' x, '''
     ''' '999/999/999/999/999/999/999/999/999/999/999 XXXXXXXX/XXXXXXXX/BCHMCAAA' '''
-
+    
+    FindPresent=np.where(TheStation > TheMDI/100.) # a 2 array list of (years, months) for each location where there is data
+    
+    # Use the first location and last location
+    StartYear=FindPresent[0][0] 	# switch to start printing to file when data are present
+    EndYear=FindPresent[0][len(FindPresent[0])-1] # switch to stop printing to file when data are no longer present
+    #print(StartYear,EndYear)
+   
     TheMon=['01','02','03','04','05','06','07','08','09','10','11','12']
     My_Fhandle=file(TheFilee,'a')
-    for ss in range(len(TheYears)):
+    for ss in range(StartYear,EndYear+1):
         for mm in range(12):
             outlist=list(("{:30s}".format(TheName),
 		   "{:11.4f}".format(TheLat),
@@ -230,7 +248,7 @@ for lop in range(nstations):
     tmpdata=statty[1:len(statty)]
     
     # read in real data and mask
-    masked_data=np.empty(len(tmpdata),dtype=float)
+    masked_data=np.empty(MonCount,dtype=float)
     masked_data.fill(MDI/100.)
     MyTypes=("|S19","|S13","float","float","float","|S1","int","int","|S2","int","int","int","|S71")
     MyDelimiters=[19,13,9,11,9,1,4,2,2,6,6,6,71]
@@ -259,10 +277,10 @@ for lop in range(nstations):
     #masked_data[masked_data == 'NA']=-99.99
     
     FilOuttee=OUTFILEEGHCN+StatIDs[lop].strip()+'.raw.tavg'
-    WriteGHCNStations(StatIDs[lop].strip(),masked_data,YrArr,FilOuttee)
+    WriteGHCNStations(StatIDs[lop].strip(),masked_data,YrArr,FilOuttee,MDI)
     
     FilOuttee=OUTFILEEISTI+'merge_'+StatIDs[lop].strip()+'_stage3'
-    WriteISTIStations(StatNames[lop].strip(),StatLats[lop],StatLons[lop],StatElevs[lop],masked_data,YrArr,Benchmark_ID,FilOuttee)
+    WriteISTIStations(StatNames[lop].strip(),StatLats[lop],StatLons[lop],StatElevs[lop],masked_data,YrArr,Benchmark_ID,FilOuttee,MDI)
 
     
 WriteGHCNList(StatIDs,StatLats,StatLons,StatElevs,StatCOs,StatNames,OUTSTATLIST,nstations)
