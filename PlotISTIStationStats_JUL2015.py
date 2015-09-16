@@ -45,12 +45,12 @@ Restarter='------'				#'------'		#'681040'
 # Set up directories and files
 INGOOD='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/ISTILONGINVENTORY_stage3proxyelevs_JUL2015.dat'
 INGOODCHECK='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/ISTILONGINVENTORY_counts_stage3proxyelevs_JUL2015.dat'
-#INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/STATSOLD_ISTI_stage3proxyelevs_loess03MDA60CLSfix_JUL2015.txt'
-INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/FIXSTATSNEW_ISTI_stage3proxyelevs_loess03MDA60CLSfix_JUL2015.txt'
-OUTDIR='/data/local/hadkw/ISTI/IMAGES/'
+#INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/SEP2015/OLDSTATS_ISTI_stage3proxyelevs_BNCHCAAA_SEP2015.txt'
+INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/SEP2015/NEWSTATS_ISTI_stage3proxyelevs_BNCHCAAA_SEP2015.txt'
+OUTDIR='/data/local/hadkw/ISTI/IMAGES/SEP2015/'
 
-#OUTPLOT='BAWGISTIStationStatsMap_REALDATA_JUL2015'
-OUTPLOT='BAWGISTIStationStatsMap_SIMULATEDDATA_JUL2015'
+#OUTPLOT='BAWGISTIStationStatsMap_REALDATA_SEP2015'
+OUTPLOT='BAWGISTIStationStatsMap_SIMULATEDDATA_SEP2015'
 
 # Set up variables
 ngoods=0	#set once file read in
@@ -127,7 +127,7 @@ def PlotNiceDotsMap(TheFile,TheGLats,TheGLons,TheGLengths,TheGClims,TheGStDevs,T
         m.drawmeridians(np.arange(-180,180.,60.))
     
         if (loo == 0):
-	    bounds=np.array([-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30])
+	    bounds=np.array([-50,-40,-30,-20,-15,-10,-5,0,5,10,15,20,25,30])
 	    ColourPoints=TheGClims
         elif (loo == 1):
 	    bounds=np.array([0.,0.3,0.6,0.9,1.2,1.5,1.8,2.1,2.4,2.7,3.0])
@@ -201,14 +201,15 @@ GoodStDevs=np.array(RawData['f15'],ndmin=1)
 GoodTrends=np.array(RawData['f1'],ndmin=1)
 GoodStAnACs=np.array(RawData['f29'],ndmin=1)
 
-# TEMPORARY CROP TO 1819 WHILE TESTING
-GoodLats=GoodLats[0:25000]
-GoodLons=GoodLons[0:25000]
-GoodLengths=GoodLengths[0:25000]
-GoodClims=GoodClims[0:25000]
-GoodStDevs=GoodStDevs[0:25000]
-GoodTrends=GoodTrends[0:25000]
-GoodStAnACs=GoodStAnACs[0:25000]
+## TEMPORARY CROP TO 1819 WHILE TESTING
+#GoodLats=GoodLats[0:25000]
+#GoodLons=GoodLons[0:25000]
+#GoodLengths=GoodLengths[0:25000]
+#GoodClims=GoodClims[0:25000]
+#GoodStDevs=GoodStDevs[0:25000]
+#GoodTrends=GoodTrends[0:25000]
+#GoodStAnACs=GoodStAnACs[0:25000]
+
 # pass to plotter
     
 MyFile=OUTDIR+OUTPLOT
