@@ -120,18 +120,18 @@ ProjectName='BNCHCAAA'
 # Set up file locations
 STATSUFFIXOUT='_'+ProjectName+'.txt'
 
-CORRFIL='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/corr.v101JUL2015.tavg.r00.1509041626'	
+CORRFIL='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/corr/corr.BNCHCAAA_0915.tavg.r00.1509161733'	
 INRAWISTI='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/ISTI_TYPE/'
-INRAW='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/monthly/raw/'
+INRAW='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/monthly/raw/'
 STATSUFFIXINRAW='.raw.tavg'
-STATLISTALL='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/meta/v101JUL2015_stnlist.tavg'	
-STATLISTHOM='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/meta.v101JUL2015.tavg.r00.1509041626'	
-STATNOTLIST1='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/meta.v101JUL2015.tavg.r00.1509041626.1.input_not_stnlist'	
-STATNOTLIST2='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/meta.v101JUL2015.tavg.r00.1509041626.2.input_not_stnlist'	
-INHOM='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/monthly/FLs.r00/'
+STATLISTALL='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/meta/BNCHCAAA_0915_stnlist.tavg'	
+STATLISTHOM='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/corr/meta.BNCHCAAA_0915.tavg.r00.1509161733'	
+STATNOTLIST1='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/corr/meta.BNCHCAAA_0915.tavg.r00.1509161733.1.input_not_stnlist'	
+STATNOTLIST2='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/corr/meta.BNCHCAAA_0915.tavg.r00.1509161733.2.input_not_stnlist'	
+INHOM='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/monthly/FLs.r00/'
 STATSUFFIXINHOM='.FLs.r00.tavg'
-OUTPLOTDIR='/data/local/hadkw/ISTI/IMAGES/PHA_ADJ/'
-OUTHOMMSK='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/HOMOG/MASKEDFIXCLEAN1_ISTI_stage3proxyelevs_PHAADJ_SEP2015.txt'
+OUTPLOTDIR='/data/local/hadkw/ISTI/IMAGES/SEP2015/PHA_ADJ/'
+OUTHOMMSK='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/HOMOG/MASKEDCLEAN_ISTI_stage3proxyelevs_BNCHCAAA_PHAADJ_SEP2015.txt'
 OUTHOMGHCN='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/HOMOG/GHCN_TYPE/'
 STATSUFFIXOUTGHCN='.'+ProjectName+'.tavg'
 OUTHOMISTI='/data/local/hadkw/ISTI/DATA/CLEANWORLDS/v101_JUL2015/HOMOG/ISTI_TYPE/'
@@ -573,14 +573,14 @@ for st in range(nAstations):
     MyHOMStation=np.empty((nyrs,12))	# full time array filled after reading in candidate station
     MyHOMStation.fill(-9999)
     MyFile=INHOM+StationListALLID[st]+STATSUFFIXINHOM 
-    MyTypes=np.append(("|S12","int"),np.tile(("int","|S1"),12))
-    MyDelimiters=np.append((12,4,6,1),(8,1)*11)
+    MyTypes=np.append(("|S12","int"),np.tile(("int","|S1","|S1","|S1"),12))
+    MyDelimiters=np.append((12,4,6,1,1,1),(6,1,1,1)*11)
     RawData=ReadData(MyFile,MyTypes,MyDelimiters)
     for yy in range(len(RawData['f0'])):
 	moo=list(RawData[yy])
 	ypoint=moo[1]-styr
 	# get the non-str bits of moo
-	noomoo=np.reshape(moo[2:26],(12,2))
+	noomoo=np.reshape(moo[2:50],(12,4))
 	MyHOMStation[ypoint,:]=noomoo[:,0] 
 
     MyHOMStation=np.reshape(MyHOMStation.astype(np.float)/100.,(1,nmons))    # now in proper units and an array not list

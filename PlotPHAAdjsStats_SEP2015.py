@@ -54,12 +54,13 @@
 # PHA homogenised stations = 31410 (out of 32522)
 # /data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/meta.v101JUL2015.tavg.r00.1509041626
 # Reduce PHAv52j.FAST.MLY.TEST.1509041626.tavg.v101JUL2015.r00.out to only last Adj write: part
+# > grep ^"Adj write" PHAv52j.FAST.MLY.TEST.1509161733.tavg.BNCHCAAA_0915.r00.out > BNCHCAAA_v101JUL2015_PHA_SEP2015.log
 # /data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/output/BNCHCAAA_v101JUL2015_PHA.log
 # 
 # -----------------------
 # OUTPUT
 # -----------------------
-# Outputs to: /data/local/hadkw/ISTI/IMAGES/
+# Outputs to: /data/local/hadkw/ISTI/IMAGES/SEP2015/
 #		PHAAdj_stats_ALL_BNCHCAAA_SEP2015.eps/png
 #		PHAAdjs_stats_SIG_BNCHCAAA_SEP2015.eps/png
 #	    /data/local/hadkw/ISTI/LISTS/
@@ -94,6 +95,20 @@
 # OTHER INFORMATION
 # -----------------------
 # BNCHCAAA Notes ALL, SIG
+# Total number of adjustments: 4830, 2267
+# Adj per station (32522 stations from 1800 to 2015, but only 31410 could be homogenised - v101JUL2015 missing data): 0.154, 0.072
+# Mean absolute adjustment size:0.397, 0.435
+# Standard deviation of absolute adjustment size: 0.271, 0.280
+# Mean actual adjustment size: 0.004, 0.013
+# Standard deviation of actual adjustments: 0.481, 0.509
+# using grep -o -e -99.99 MASKEDCLEAN_.... | wc -l to get number of missing months
+# total number of months should be ((2016-1800)*12)*32522 (too difficult to test for over only the 31410 sadly)
+# So frequency using 32522= 0.149. 0.070 per station
+# There are 84297024 months of potential data and 69003169 months of missing data leaving 15293855 months of actual data which is 1274487.92 years
+# ALL: This works out as 0.00379 per year, 0.0379 per decade, 0.379 per century or 1 every ~264 years
+# SIG: This works out as 0.00178 per year, 0.0178 per decade, 0.178 per century or 1 every ~562 years
+#
+# BNCHCAAA_noqc Notes ALL, SIG
 # Adj per station (32522 stations from 1800 to 2015, v101JUL2015 missing data): 0.141, 0.073
 # Mean absolute adjustment size:0.410, 0.445
 # Standard deviation of absolute adjustment size: 0.302, 0.319
@@ -117,10 +132,10 @@ ProjectName='BNCHCAAA'
 
 # directories and file names
 # PHA homogenised stations = 31410 (out of 32522)
-instats='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/corr/meta.v101JUL2015.tavg.r00.1509041626'
+instats='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/corr/meta.BNCHCAAA_0915.tavg.r00.1509161733'
 # reduced PHAv52j.FAST.MLY.TEST.1509041626.tavg.v101JUL2015.r00.out to only last Adj write: part
-inlog='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/v101JUL2015/output/BNCHCAAA_v101JUL2015_PHA_SEP2015.log'
-outplotdir='/data/local/hadkw/ISTI/IMAGES/'
+inlog='/data/local/hadkw/ISTI/PROGS/PHA2014v52j/PHA52j_full/pha_v52j/data/isti/BNCHCAAA_0915/output/BNCHCAAA_v101JUL2015_PHA_SEP2015.log'
+outplotdir='/data/local/hadkw/ISTI/IMAGES/SEP2015/'
 outlistdir='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/'
 outplotstatALL='PHAAdj_stats_ALL_BNCHCAAA_SEP2015'
 outplotstatSIG='PHAAdj_stats_SIG_BNCHCAAA_SEP2015'
@@ -136,6 +151,7 @@ StYear=1800
 EdYear=2015
 NYrs=(EdYear-StYear)+1
 NMonths=NYrs*12
+NActualYears=15293855/12.	# from grep -o -e -99.99 MASKEDCLEAN... 
 
 # soft variables
 nPHAStations=0 # filled in after read in
@@ -186,7 +202,7 @@ def WriteOutList(TheStations,TheAdjs,TheUncs,TheFile):
     return # WriteOutList
 #************************************************************************
 # PLOTHISTTIMESERIES
-def PlotHistTimeSeries(TheFile,StationAdjs,AdjLocTots,StartYr,EndYr,ProjName,nStations):
+def PlotHistTimeSeries(TheFile,StationAdjs,AdjLocTots,StartYr,EndYr,ProjName,nStations,NActualYears):
     ''' Plots histogram of adjustment sizes over laid with mean and standard devations '''
     ''' Lower panels shows counts of changepoints over time '''
     
@@ -230,7 +246,11 @@ def PlotHistTimeSeries(TheFile,StationAdjs,AdjLocTots,StartYr,EndYr,ProjName,nSt
     ax[1].set_ylabel('Change point frequency',fontsize=12)
     ax[1].set_xlabel('Time',fontsize=12)
     CpFreq="{:7.3f}".format(np.float(len(StationAdjs))/np.float(nStations))
+    CpFreqCent="{:7.3f}".format((np.float(len(StationAdjs))/np.float(NActualYears))*100.)
+    CpFreqYears="{:4d}".format(np.int(np.round((1./((np.float(len(StationAdjs))/np.float(NActualYears))*100.))*100)))
     ax[1].annotate('Mean Change Points per station: '+CpFreq,xy=(0.02,0.9),xycoords='axes fraction',size=12,ha='left')
+    ax[1].annotate('Mean Change Points per century: '+CpFreqCent,xy=(0.02,0.8),xycoords='axes fraction',size=12,ha='left')
+    ax[1].annotate('Approx. 1 Change Point every '+CpFreqYears+' years',xy=(0.02,0.7),xycoords='axes fraction',size=12,ha='left')
 
     # Save
     plt.savefig(TheFile+".eps")
@@ -338,11 +358,11 @@ for ss in range(nPHAStations):
 
 print("Plotting")        
 # make plots of all adjustments
-PlotHistTimeSeries(outplotdir+outplotstatALL,StationAdjs,AdjLocTots,StYear,EdYear,ProjectName,nPHAStations)
+PlotHistTimeSeries(outplotdir+outplotstatALL,StationAdjs,AdjLocTots,StYear,EdYear,ProjectName,nPHAStations,NActualYears)
 
 # make plots of only significant adjustments (unc < abs(adj))
 PlotHistTimeSeries(outplotdir+outplotstatSIG,StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]],
-				  AdjLocTotsSigs,StYear,EdYear,ProjectName,nPHAStations)
+				  AdjLocTotsSigs,StYear,EdYear,ProjectName,nPHAStations,NActualYears)
 
 print("Sorting")
 # sort list from largest to smallest of absolute values
@@ -352,15 +372,16 @@ SortedAdjPointers=np.flipud(np.argsort(abs(StationAdjs)))
 WriteOutList(StationIDs[SortedAdjPointers],StationAdjs[SortedAdjPointers],StationUncs[SortedAdjPointers],outlistdir+outlistlargeALL)
 
 # output stats
+print("Total number of adjustments: ",len(StationIDs),', ',len(np.where(StationUncs < abs(StationAdjs))[0]))
 print("Changepoint Frequency: ",np.float(len(StationIDs))/np.float(nPHAStations),', ',
       np.float(len(np.where(StationUncs < abs(StationAdjs))[0]))/np.float(nPHAStations))
 print('ABSOLUTE MEAN: ',np.mean(abs(StationAdjs)),', ',np.mean(abs(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]])))
 print('ABSOLUTE MEDIAN: ',np.median(abs(StationAdjs)),', ',np.median(abs(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]])))
 print('ABSOLUTE ST DEV',np.std(abs(StationAdjs)),', ',np.std(abs(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]])))
 print(' ')
-print('ACTUAL MEAN: ',np.mean(StationAdjs),', ',np.mean(abs(StationAdjs[np.where(StationTotUncs < StationTotAdjs)[0]])))
-print('ACTUAL MEDIAN: ',np.median(StationAdjs),', ',np.median(abs(StationAdjs[np.where(StationTotUncs < StationTotAdjs)[0]])))
-print('ACTUAL ST DEV',np.std(StationAdjs),', ',np.std(abs(StationAdjs[np.where(StationTotUncs < StationTotAdjs)[0]])))
+print('ACTUAL MEAN: ',np.mean(StationAdjs),', ',np.mean(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]]))
+print('ACTUAL MEDIAN: ',np.median(StationAdjs),', ',np.median(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]]))
+print('ACTUAL ST DEV',np.std(StationAdjs),', ',np.std(StationAdjs[np.where(StationTotUncs < abs(StationTotAdjs))[0]]))
 
 pdb.set_trace()
 

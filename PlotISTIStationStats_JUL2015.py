@@ -46,11 +46,11 @@ Restarter='------'				#'------'		#'681040'
 INGOOD='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/ISTILONGINVENTORY_stage3proxyelevs_JUL2015.dat'
 INGOODCHECK='/data/local/hadkw/ISTI/LISTS/v101_JUL2015/ISTILONGINVENTORY_counts_stage3proxyelevs_JUL2015.dat'
 #INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/SEP2015/OLDSTATS_ISTI_stage3proxyelevs_BNCHCAAA_SEP2015.txt'
-INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/SEP2015/NEWSTATS_ISTI_stage3proxyelevs_BNCHCAAA_SEP2015.txt'
+INSTATS='/data/local/hadkw/ISTI/LISTS/BAWG/SEP2015/NEWMASKEDSTATS_ISTI_stage3proxyelevs_BNCHCAAA_SEP2015.txt'
 OUTDIR='/data/local/hadkw/ISTI/IMAGES/SEP2015/'
 
 #OUTPLOT='BAWGISTIStationStatsMap_REALDATA_SEP2015'
-OUTPLOT='BAWGISTIStationStatsMap_SIMULATEDDATA_SEP2015'
+OUTPLOT='BAWGISTIMASKEDStationStatsMap_SIMULATEDDATA_SEP2015'
 
 # Set up variables
 ngoods=0	#set once file read in
