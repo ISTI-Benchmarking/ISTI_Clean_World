@@ -513,7 +513,7 @@ if (partzero == 0) {	# Need to run from the beginning
     write.table(paste(c(ds_info$statid[stattoo],ds_info$statid[corrneighbours.id[[stattoo]]]),collapse=" "),
     	  file=paste(dirbawg,outfilNEIGHlist,sep=""),append=TRUE,sep=" ",row.names=FALSE,col.names=FALSE,quote=FALSE)
 
-    # 12) get residuals stats, transform to MVN and store with mean and sd used to transform
+# 12) get residuals stats, and store with mean and sd used to transform new ones later (not standardised here)
     tmpresidsCLIM<-mean(tmpresids)
     tmpresidsSD<-sd(tmpresids)
 

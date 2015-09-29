@@ -2,7 +2,7 @@
 #
 # Author: Kate Willett
 # Created: 14 September 2015
-# Last update: 23 September 2015
+# Last update: 29 September 2015
 # Location: /data/local/hadkw/ISTI/PROGS/
 # GitHub: https://github.com/SurfaceTemp/ISTI_Clean_Worlds/
 # -----------------------
@@ -120,6 +120,18 @@
 # VERSION/RELEASE NOTES
 # -----------------------
 # 
+# Version 1 29th September
+# ---------
+#  
+# Enhancements
+# Added output to histograms for the mean and standard deviation of distributions
+# Also output to STDOUT the quantiles of the distribution
+# Station time series plots now start from 1800 for the Real ISTI databank
+#  
+# Changes
+#  
+# Bug fixes
+#
 # Version 1 21st September
 # ---------
 #  
@@ -152,7 +164,7 @@ restarter<-"--------"	#"--------"
 # TUNEABLE PARAMETERS
 
 # EDITABLE PARAMETERS
-styr     <-1850			# Start year for station (was 1850)
+styr     <-1800			# Start year for station (was 1850)
 edyr     <-2015			# end year for station
 nstations<-32522 		# Only stations with sufficient correlating neighbours to create a VAR model (22697,22256)
 modstyr  <-1800	# GCM start year is 1860 so need to reverse 1860 to 1920 when adding GCM loess!!!
@@ -258,20 +270,28 @@ parttwo<-1	# switch - if 0, histograms of new covs
 		# if 1 - do not do anything
 partthree<-1	# switch - if 0, histograms of old covs
 		# if 1 - do not do anything
-partfour<-1	# switch - if 0, histograms of new diffs
+partfour<-0	# switch - if 0, histograms of new diffs
 		# if 1 - do not do anything
-partfive<-1	# if 0, histograms of old diffs
+partfive<-0	# if 0, histograms of old diffs
 		# if 1 - do not do anything
-partsix<-0	# if 0, for each station and four nearest neighbours plot climate anomaly time series and distribution - old vs new
+partsix<-1	# if 0, for each station and four nearest neighbours plot climate anomaly time series and distribution - old vs new
 		# if 1 - do not do anything
 ###########################################################################################
 if (parttwo == 0) {
-  print("Part Two 0 - plots of OLD covs")
+  print("Part Two 0 - plots of NEW covs")
   # set up full arrays
   FullCCclimanom<-0
   FullCCsdanom<-0
   FullCCl1climanom<-0
   FullCCl1sdanom<-0
+  CCmeanCA<-0
+  CCsdCA<-0
+  CCl1meanCA<-0
+  CCl1sdCA<-0
+  CCmeanSA<-0
+  CCsdSA<-0
+  CCl1meanSA<-0
+  CCl1sdSA<-0
 
   # read in covs lag 0
   print('Reading in NEW COVS')
@@ -292,16 +312,59 @@ if (parttwo == 0) {
 
   rm(mooCOV,mycols)
   gc()
+  
+  # Get means and standard deviations of distributions
+  CCmeanCA<-mean(FullCCclimanom)
+  CCsdCA<-sd(FullCCclimanom)
+  CCl1meanCA<-mean(FullCCl1climanom)
+  CCl1sdCA<-sd(FullCCl1climanom)
+  CCmeanSA<-mean(FullCCsdanom)
+  CCsdSA<-sd(FullCCsdanom)
+  CCl1meanSA<-mean(FullCCl1sdanom)
+  CCl1sdSA<-sd(FullCCl1sdanom)
+  
+  # Print out Quantiles
+  print("St Anoms: lag 0s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCsdanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: lag 0s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCclimanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
 
+  print("St Anoms: lag 1s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCl1sdanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: lag 1s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCl1climanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTNEWCOVStAn,sep=""),width=6, height=8)
 
   par(mfrow=c(2,1))
   hist(FullCCsdanom[-1],main="Cross Correlations at lag 0 (New Std Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
-  mtext('a)',side=3,adj=0,padj=0)
+  mtext('c)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCmeanSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCsdSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullCCl1sdanom[-1],main="Cross Correlations at lag 1 (New Std Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1))
-  mtext('b)',side=3,adj=0,padj=0)
+  mtext('d)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCl1meanSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCl1sdSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
 
@@ -310,9 +373,21 @@ if (parttwo == 0) {
 
   par(mfrow=c(2,1))
   hist(FullCCclimanom[-1],main="Cross Correlations at lag 0 (New Clim Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
-  mtext('a)',side=3,adj=0,padj=0)
+  mtext('c)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCmeanCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCsdCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullCCl1climanom[-1],main="Cross Correlations at lag 1 (New Clim Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1))
-  mtext('b)',side=3,adj=0,padj=0)
+  mtext('d)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCl1meanCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCl1sdCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
 
@@ -328,6 +403,14 @@ if (partthree == 0) {
   FullCCsdanom<-0
   FullCCl1climanom<-0
   FullCCl1sdanom<-0
+  CCmeanCA<-0
+  CCsdCA<-0
+  CCl1meanCA<-0
+  CCl1sdCA<-0
+  CCmeanSA<-0
+  CCsdSA<-0
+  CCl1meanSA<-0
+  CCl1sdSA<-0
 
   # read in covs lag 0
   print('Reading in OLD COVS')
@@ -349,6 +432,37 @@ if (partthree == 0) {
   rm(mooCOV,mycols)
   gc()
 
+  # Get means and standard deviations of distributions
+  CCmeanCA<-mean(FullCCclimanom)
+  CCsdCA<-sd(FullCCclimanom)
+  CCl1meanCA<-mean(FullCCl1climanom)
+  CCl1sdCA<-sd(FullCCl1climanom)
+  CCmeanSA<-mean(FullCCsdanom)
+  CCsdSA<-sd(FullCCsdanom)
+  CCl1meanSA<-mean(FullCCl1sdanom)
+  CCl1sdSA<-sd(FullCCl1sdanom)
+  
+  # Print out Quantiles
+  print("St Anoms: lag 0s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCsdanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: lag 0s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCclimanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
+  print("St Anoms: lag 1s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCl1sdanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: lag 1s")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullCCl1climanom,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTOLDCOVStAn,sep=""),width=6, height=8)
@@ -356,8 +470,20 @@ if (partthree == 0) {
   par(mfrow=c(2,1))
   hist(FullCCsdanom[-1],main="Cross Correlations at lag 0 (Old Std Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
   mtext('a)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCmeanSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCsdSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullCCl1sdanom[-1],main="Cross Correlations at lag 1 (Old Std Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1))
   mtext('b)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCl1meanSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCl1sdSA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
 
@@ -367,8 +493,20 @@ if (partthree == 0) {
   par(mfrow=c(2,1))
   hist(FullCCclimanom[-1],main="Cross Correlations at lag 0 (Old Clim Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
   mtext('a)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCmeanCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCsdCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullCCl1climanom[-1],main="Cross Correlations at lag 1 (Old Clim Anoms)",xlab="Correlation", ylab="Frequency",breaks=seq(-0.8,1.,0.1))
   mtext('b)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.1)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(CCl1meanCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(CCl1sdCA,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
 
@@ -382,6 +520,10 @@ if (partfour == 0) { # end of part two
   # set up storage
   FullDiffSD<-0  	# growing array to save all diffs SDs to plot as hist (REMOVE 1st ELEMENT)
   FullDiffAC<-0	# growing array to save all diffs lag 1 cor to plot as hist (REMOVE 1st ELEMENT)
+  SDmean<-0
+  SDsd<-0
+  ACmean<-0
+  ACsd<-0
   
   # read in st anoms
   print('Reading in NEW DIFFS and plot')
@@ -401,6 +543,23 @@ if (partfour == 0) { # end of part two
   rm(mooCOV,mycols)
   gc()
 
+  # Get means and standard deviations of distributions
+  SDmean<-mean(FullDiffSD)
+  SDsd<-sd(FullDiffSD)
+  ACmean<-mean(FullDiffAC)
+  ACsd<-sd(FullDiffAC)
+  
+  # Print out Quantiles
+  print("St Anoms: St Devs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffSD,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("St Anoms: ACs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffAC,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTNEWDIFFStAn,sep=""),width=6, height=8)
@@ -410,22 +569,39 @@ if (partfour == 0) { # end of part two
   #par(mar=c(5,3,2,2)+0.1)
   #mai(c(0.7,1.2,1,0.7)) # bottom, left, top, right
   hist(FullDiffSD[-1],main="Difference Series St Dev (New Std Anoms)",xlab="Standard Deviation", ylab="Frequency",breaks=seq(0,12,0.2)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
-  mtext('a)',side=3,adj=0,padj=0)
+  mtext('c)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(SDmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(SDsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   #par(mar=c(5,3,2,2)+0.1)
   #mai(c(0.7,1.2,1,0.7)) # bottom, left, top, right
   hist(FullDiffAC[-1],main="Difference Series Lag 1 Autocorrelation (New Std Anoms)",xlab="Autocorrelation (lag 1)", ylab="Frequency",breaks=seq(-0.6,1.,0.1))
-  mtext('b)',side=3,adj=0,padj=0)
+  mtext('d)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(ACmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(ACsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
+
   rm(FullDiffSD,FullDiffAC)
   gc()
     
   # reset storage
   FullDiffSD<-0  	# growing array to save all diffs SDs to plot as hist (REMOVE 1st ELEMENT)
   FullDiffAC<-0	# growing array to save all diffs lag 1 cor to plot as hist (REMOVE 1st ELEMENT)  
+  SDmean<-0
+  SDsd<-0
+  ACmean<-0
+  ACsd<-0
   
   # read in clim anoms
-  print('Reading in OLD DIFFS and plot')
+  print('Reading in NEW DIFFS and plot')
   
   mycols <- rep("NULL",41)
   mycols[2:41] <- "character"
@@ -442,15 +618,44 @@ if (partfour == 0) { # end of part two
   rm(mooCOV,mycols)
   gc()
 
+  # Get means and standard deviations of distributions
+  SDmean<-mean(FullDiffSD)
+  SDsd<-sd(FullDiffSD)
+  ACmean<-mean(FullDiffAC)
+  ACsd<-sd(FullDiffAC)
+  
+  # Print out Quantiles
+  print("Clim Anoms: St Devs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffSD,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: ACs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffAC,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTNEWDIFFClAn,sep=""),width=6, height=8)
 
   par(mfrow=c(2,1))
   hist(FullDiffSD[-1],main="Difference Series St Dev (New Clim Anoms)",xlab="Standard Deviation (degrees C)", ylab="Frequency",breaks=seq(0,12,0.2)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
-  mtext('a)',side=3,adj=0,padj=0)
+  mtext('c)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(SDmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(SDsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullDiffAC[-1],main="Difference Series Lag 1 Autocorrelation (New Clim Anoms)",xlab="Autocorrelation (lag 1)", ylab="Frequency",breaks=seq(-0.6,1.,0.1))
-  mtext('b)',side=3,adj=0,padj=0)
+  mtext('d)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(ACmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(ACsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
   rm(FullDiffSD,FullDiffAC)
@@ -465,6 +670,10 @@ if (partfive == 0) { # end of part two
   # set up storage
   FullDiffSD<-0  	# growing array to save all diffs SDs to plot as hist (REMOVE 1st ELEMENT)
   FullDiffAC<-0	# growing array to save all diffs lag 1 cor to plot as hist (REMOVE 1st ELEMENT)
+  SDmean<-0
+  SDsd<-0
+  ACmean<-0
+  ACsd<-0
   
   # read in st anoms
   print('Reading in OLD DIFFS and plot')
@@ -484,6 +693,23 @@ if (partfive == 0) { # end of part two
   rm(mooCOV,mycols)
   gc()
 
+  # Get means and standard deviations of distributions
+  SDmean<-mean(FullDiffSD)
+  SDsd<-sd(FullDiffSD)
+  ACmean<-mean(FullDiffAC)
+  ACsd<-sd(FullDiffAC)
+  
+  # Print out Quantiles
+  print("St Anoms: St Devs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffSD,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("St Anoms: ACs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffAC,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTOLDDIFFStAn,sep=""),width=6, height=8)
@@ -494,10 +720,22 @@ if (partfive == 0) { # end of part two
   #mai(c(0.7,1.2,1,0.7)) # bottom, left, top, right
   hist(FullDiffSD[-1],main="Difference Series St Dev (Old Std Anoms)",xlab="Standard Deviation", ylab="Frequency",breaks=seq(0,12,0.2)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
   mtext('a)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(SDmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(SDsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   #par(mar=c(5,3,2,2)+0.1)
   #mai(c(0.7,1.2,1,0.7)) # bottom, left, top, right
   hist(FullDiffAC[-1],main="Difference Series Lag 1 Autocorrelation (Old Std Anoms)",xlab="Autocorrelation (lag 1)", ylab="Frequency",breaks=seq(-0.6,1.,0.1))
   mtext('b)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(ACmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(ACsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
   rm(FullDiffSD,FullDiffAC)
@@ -506,6 +744,10 @@ if (partfive == 0) { # end of part two
   # reset storage
   FullDiffSD<-0  	# growing array to save all diffs SDs to plot as hist (REMOVE 1st ELEMENT)
   FullDiffAC<-0	# growing array to save all diffs lag 1 cor to plot as hist (REMOVE 1st ELEMENT)  
+  SDmean<-0
+  SDsd<-0
+  ACmean<-0
+  ACsd<-0
   
   # read in clim anoms
   print('Reading in OLD DIFFS and plot')
@@ -525,6 +767,23 @@ if (partfive == 0) { # end of part two
   rm(mooCOV,mycols)
   gc()
 
+  # Get means and standard deviations of distributions
+  SDmean<-mean(FullDiffSD)
+  SDsd<-sd(FullDiffSD)
+  ACmean<-mean(FullDiffAC)
+  ACsd<-sd(FullDiffAC)
+  
+  # Print out Quantiles
+  print("Clim Anoms: St Devs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffSD,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+  
+  print("Clim Anoms: ACs")
+  qporbs<-seq(100)/100.
+  qtls<-quantile(FullDiffAC,qporbs) # gives the % of points less than each percentile threshold
+  print(qtls)
+
   # now make the plot and save
   setEPS()
   postscript(paste(dirplot,outplotHISTOLDDIFFClAn,sep=""),width=6, height=8)
@@ -532,8 +791,20 @@ if (partfive == 0) { # end of part two
   par(mfrow=c(2,1))
   hist(FullDiffSD[-1],main="Difference Series St Dev (Old Clim Anoms)",xlab="Standard Deviation (degrees C)", ylab="Frequency",breaks=seq(0,12,0.2)) #  xlim=c(xmin, xmax), ylim=c(ymin, ymax)
   mtext('a)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(SDmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(SDsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   hist(FullDiffAC[-1],main="Difference Series Lag 1 Autocorrelation (Old Clim Anoms)",xlab="Autocorrelation (lag 1)", ylab="Frequency",breaks=seq(-0.6,1.,0.1))
   mtext('b)',side=3,adj=0,padj=0)
+  plotcoords<-par("usr") # returns (xleft,xright, ybottom, ytop)
+  xpos=((plotcoords[2]-plotcoords[1])*0.7)+plotcoords[1]
+  ypos=((plotcoords[4]-plotcoords[3])*0.9)+plotcoords[3]
+  ypos2=((plotcoords[4]-plotcoords[3])*0.8)+plotcoords[3]
+  text(xpos,ypos,paste('Mean = ',format(round(ACmean,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
+  text(xpos,ypos2,paste('St Dev = ',format(round(ACsd,digits=2),trim=FALSE,nsmall=2,width=6),sep=""),pos=4)
   
   dev.off()
   rm(FullDiffSD,FullDiffAC)
